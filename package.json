@@ -1,0 +1,27 @@
+{
+  "name": "tracker",
+  "version": "1.0.0",
+  "description": "tracker",
+  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "unbuild",
+    "stub": "unbuild --stub"
+  },
+  "keywords": [
+    "tracker"
+  ],
+  "author": "zhe-qi",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.7.4",
+    "unbuild": "^0.7.6"
+  }
+}

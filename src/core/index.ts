@@ -13,11 +13,12 @@ const MouseEventList: string[] = [
 ]
 export default class Tracker {
   public data: Options
-
+  public timeStr: number = 0
   constructor(options: Options) {
     this.data = { ...this.initDef(), ...options }
   }
 
+  // 初始化默认配置
   private initDef(): DefaultOptons {
     window.history['pushState'] = createHistoryEvent('pushState')
     window.history['replaceState'] = createHistoryEvent('replaceState')
@@ -26,6 +27,7 @@ export default class Tracker {
       hashTracker: false,
       domTracker: false,
       jsError: false,
+      isPageStay: false,
       sdkVersion: TrackerConfig.version
     }
   }
@@ -58,8 +60,8 @@ export default class Tracker {
     })
   }
 
+  // 错误上报
   private errorEvent() {
-    // 错误上报
     window.addEventListener('error', e => {
       this.reportTracker({
         event: 'error',
@@ -69,6 +71,7 @@ export default class Tracker {
     })
   }
 
+  // promise 错误上报
   private promiseReject() {
     window.addEventListener('unhandledrejection', event => {
       event.promise.catch(error => {
@@ -102,6 +105,57 @@ export default class Tracker {
       })
     })
   }
+  // SPA页面停留时间监控
+  public pageStay() {
+    window.addEventListener('onload', () => {
+      this.timeStr = new Date().getTime()
+    })
+
+    window.addEventListener('popstate', () => {
+      let t = new Date().getTime() - this.timeStr
+      this.timeStr = new Date().getTime()
+      this.reportTracker({
+        event: 'pageStay',
+        targetKey: 'time',
+        time: t,
+        url: window.location.href
+      })
+    })
+
+    window.addEventListener('pushstate', () => {
+      let t = new Date().getTime() - this.timeStr
+      this.timeStr = new Date().getTime()
+      this.reportTracker({
+        event: 'pageStay',
+        targetKey: 'time',
+        time: t,
+        url: window.location.href
+      })
+    })
+
+    window.addEventListener('replacestate', () => {
+      let t = new Date().getTime() - this.timeStr
+      this.timeStr = new Date().getTime()
+      this.reportTracker({
+        event: 'pageStay',
+        targetKey: 'time',
+        time: t,
+        url: window.location.href
+      })
+    })
+
+    window.addEventListener('hashchange', () => {
+      let t = new Date().getTime() - this.timeStr
+      this.timeStr = new Date().getTime()
+      this.reportTracker({
+        event: 'pageStay',
+        targetKey: 'time',
+        time: t,
+        url: window.location.href
+      })
+    })
+  }
+
   // 调用这个执行初始化
   private installTracker() {
     // PV行为监控
@@ -122,6 +176,9 @@ export default class Tracker {
     }
     if (this.data.jsError) {
       this.jsError()
+    }
+    if (this.data.isPageStay) {
+      this.pageStay()
     }
   }
 

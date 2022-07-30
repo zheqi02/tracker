@@ -7,6 +7,7 @@ export interface DefaultOptons {
   sdkVersion: string | number
   extra: Record<string, any> | undefined
   jsError: boolean
+  isPageStay: boolean
 }
 
 //必传参数 requestUrl
